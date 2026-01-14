@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import main.java.model.Hotel;
 
@@ -63,4 +64,23 @@ public class HotelReservationService {
             total += isWeekend ? hotel.getWeekendRate(isRewardCustomer) : hotel.getWeekdayRate(isRewardCustomer);
         }
         return total;
-    }}
+    }
+
+ // UC4: Get all cheapest hotels for given date range
+    public List<Hotel> findAllCheapestHotels(List<LocalDate> dates, boolean isRewardCustomer) {
+        if (hotels.isEmpty()) {
+            throw new RuntimeException("No hotels available");
+        }
+
+        // Calculate minimum total cost
+        int minCost = hotels.stream()
+                .mapToInt(hotel -> calculateTotalCost(hotel, dates, isRewardCustomer))
+                .min()
+                .orElseThrow(() -> new RuntimeException("No hotels available"));
+
+        // Return all hotels with this min cost
+        return hotels.stream()
+                .filter(hotel -> calculateTotalCost(hotel, dates, isRewardCustomer) == minCost)
+                .collect(Collectors.toList());
+    }
+}

@@ -22,6 +22,7 @@ public class HotelReservationmain {
             System.out.println("\n==== Hotel Reservation System ====");
             System.out.println("1. Add Hotel (UC1)");
             System.out.println("2. Find Cheapest Hotel (UC2)");
+            System.out.println("3.Find All Cheapest Hotels for Dates (UC4)");
             System.out.println("3. Exit");
             System.out.print("Enter your choice: ");
             int choice = sc.nextInt();
@@ -70,8 +71,24 @@ public class HotelReservationmain {
                     System.out.println("Cheapest Hotel: " + cheapestHotel.getName() +
                             ", Total Rates: $" + totalCost);
                     break;
-
                 case 3:
+                    System.out.println("Enter dates separated by comma (e.g., 11Sep2020,12Sep2020):");
+                    String uc4InputDates = sc.nextLine();
+
+                    List<LocalDate> uc4Dates = Arrays.stream(uc4InputDates.split(","))
+                            .map(date -> LocalDate.parse(date.trim(), DateTimeFormatter.ofPattern("ddMMMyyyy")))
+                            .collect(Collectors.toList());
+
+                    List<Hotel> cheapestHotels = service.findAllCheapestHotels(uc4Dates, false); // false for regular
+                    int uc4TotalCost = cheapestHotels.isEmpty() ? 0 :
+                            service.calculateTotalCost(cheapestHotels.get(0), uc4Dates, false);
+
+                    System.out.print("Cheapest Hotels: ");
+                    cheapestHotels.forEach(h -> System.out.print(h.getName() + " "));
+                    System.out.println(", Total Rates: $" + uc4TotalCost);
+                    break;
+
+                case 4:
                     System.out.println("Exiting...");
                     exit = true;
                     break;
