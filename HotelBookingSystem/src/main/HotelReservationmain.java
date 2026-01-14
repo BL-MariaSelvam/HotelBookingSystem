@@ -57,7 +57,6 @@ public class HotelReservationmain {
                     break;
 
                 case 2:
-                	 // UC2: Find Cheapest Hotel
                     System.out.println("Enter dates separated by comma (e.g., 10Sep2020,11Sep2020):");
                     String inputDates = sc.nextLine();
 
@@ -65,8 +64,8 @@ public class HotelReservationmain {
                             .map(date -> LocalDate.parse(date.trim(), DateTimeFormatter.ofPattern("ddMMMyyyy")))
                             .collect(Collectors.toList());
 
-                    Hotel cheapestHotel = service.findCheapestHotel(dates);
-                    int totalCost = service.getTotalCostForHotel(cheapestHotel, dates);
+                    Hotel cheapestHotel = service.findCheapestHotel(dates, false); // false for regular customer
+                    int totalCost = service.calculateTotalCost(cheapestHotel, dates, false);
 
                     System.out.println("Cheapest Hotel: " + cheapestHotel.getName() +
                             ", Total Rates: $" + totalCost);

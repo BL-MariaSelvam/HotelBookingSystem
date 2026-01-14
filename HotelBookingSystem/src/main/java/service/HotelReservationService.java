@@ -38,12 +38,13 @@ public class HotelReservationService {
         return hotels;
     }
     
-    // UC2: Find cheapest hotel for given date range
-    public Hotel findCheapestHotel(List<LocalDate> dates) {
+    // UC3: Find cheapest hotel based on weekday & weekend rates
+    // Here `isRewardCustomer` can be false for UC3 (only regular rates)
+    public Hotel findCheapestHotel(List<LocalDate> dates, boolean isRewardCustomer) {
         return hotels.stream()
                 .sorted((h1, h2) -> {
-                    int cost1 = calculateTotalCost(h1, dates);
-                    int cost2 = calculateTotalCost(h2, dates);
+                    int cost1 = calculateTotalCost(h1, dates, isRewardCustomer);
+                    int cost2 = calculateTotalCost(h2, dates, isRewardCustomer);
 
                     if (cost1 != cost2) return Integer.compare(cost1, cost2);
 
@@ -54,18 +55,12 @@ public class HotelReservationService {
                 .orElseThrow(() -> new RuntimeException("No hotels available"));
     }
 
-    // Calculate total cost for a hotel given the date range
-    private int calculateTotalCost(Hotel hotel, List<LocalDate> dates) {
+    public int calculateTotalCost(Hotel hotel, List<LocalDate> dates, boolean isRewardCustomer) {
         int total = 0;
         for (LocalDate date : dates) {
             DayOfWeek day = date.getDayOfWeek();
             boolean isWeekend = (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY);
-            total += isWeekend ? hotel.getWeekendRate(false) : hotel.getWeekdayRate(false); // Regular customer assumed
+            total += isWeekend ? hotel.getWeekendRate(isRewardCustomer) : hotel.getWeekdayRate(isRewardCustomer);
         }
         return total;
-    }
-
-    // Optional helper to get total cost for a specific hotel & date range
-    public int getTotalCostForHotel(Hotel hotel, List<LocalDate> dates) {
-        return calculateTotalCost(hotel, dates);
     }}
